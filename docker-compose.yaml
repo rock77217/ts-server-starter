@@ -1,0 +1,30 @@
+version: "3.7"
+
+services:
+  ts-server:
+    build:
+      context: ./ts-server
+      target: ${TARGET:-dev}
+    image: ts-server:latest
+    container_name: ts-server
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    volumes:
+      - ./ts-server:/srv/app
+    environment:
+      - MONGO_URI=${MONGO_URI}
+    links:
+      - ts-server-db
+    depends_on:
+      - mongodb
+    tty: true
+    stdin_open: true
+  ts-server-db:
+    image: mongo:5.0.2
+    container_name: ts-server-db
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - ./data/mongodb:/data/db
