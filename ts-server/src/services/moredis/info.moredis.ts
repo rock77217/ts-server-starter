@@ -1,6 +1,6 @@
-import { BaseTypeorm } from "./base.typeorm";
-import { SYS_DB } from "@configs/settings";
-import { User } from "@entities/info/user.entity";
+import BaseMoredis, { genEntitiesMap } from "./base.moredis";
+import { DBS, SYS_DB } from "@configs/settings";
+import User from "@entities/info/user.entity";
 
 export const stripeSecret = (user: User, keepSecret = false, keepVault = false) => {
   if (!keepVault) {
@@ -17,35 +17,36 @@ export const stripeSecret = (user: User, keepSecret = false, keepVault = false) 
   return user;
 };
 
-class InfoTypeorm extends BaseTypeorm {
+class InfoMoredis extends BaseMoredis {
   constructor() {
-    super(SYS_DB.info, [User]);
+    const entities = genEntitiesMap(SYS_DB.info, Object.keys(DBS.info));
+    super(SYS_DB.info, entities);
   }
 
   public getUser = async (name: string) => {
-    return await this.findOne(User, { name: name });
+    return await this.hybridFindOne(DBS.info.user, { name: name });
   };
 
   public listUsersWithSecret = async () => {
-    return await this.find(User);
+    return await this.hybridFind(DBS.info.user);
   };
 
   public listUsers = async () => {
     const userList = [];
-    for (const user of await this.find(User)) {
+    for (const user of await this.hybridFind(DBS.info.user)) {
       userList.push(stripeSecret(user));
     }
     return userList;
   };
 
   public clearUsers = async () => {
-    return await this.delete(User, {});
+    return await this.delete(DBS.info.user, {});
   };
 
   public saveUser = async (user: User, key = { name: user.name }) => {
-    return await this.findOneAndUpdate(User, user, key);
+    return await this.hybridUpdate(DBS.info.user, key, user);
   };
 }
 
-const infoTypeorm = new InfoTypeorm();
-export default infoTypeorm;
+const infoMoredis = new InfoMoredis();
+export default infoMoredis;

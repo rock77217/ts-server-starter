@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
-import { ROLES } from "@/configs/settings";
+import { MSG_400, MSG_403, MSG_404, ROLES } from "@/configs/settings";
 import { checkAndGetAuthUser } from "@services/auth.service";
+import { logger } from "@utils/logger";
 
 class BaseController {
   protected basicRole = [ROLES["basic"]];
@@ -49,11 +50,18 @@ class BaseController {
 
   protected retFail = (res: Response, err: unknown, code: number = 500) => {
     if (err instanceof Error) {
-      const errMsg = err && err.message ? err.message : err;
-      console.error(err);
-      res.status(code).json({ error: errMsg });
+      logger.error(err);
+      if (Object.values(MSG_400).indexOf(err.message) > -1) {
+        res.status(400).json({ error: err.message });
+      } else if (Object.values(MSG_403).indexOf(err.message) > -1) {
+        res.status(403).json({ error: err.message });
+      } else if (Object.values(MSG_404).indexOf(err.message) > -1) {
+        res.status(404).json({ error: err.message });
+      } else {
+        res.status(code).json({ error: err.message });
+      }
     } else {
-      console.log("Unexpected error:", err);
+      logger.error("Unexpected error:", err);
     }
   };
 }

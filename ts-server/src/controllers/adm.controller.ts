@@ -1,9 +1,9 @@
 import BaseController from "./base.controller";
 import { Request, Response } from "express";
 import { activateUser, checkRole, createUserWithSecret, initAdm } from "@services/auth.service";
-import { User } from "@entities/info/user.entity";
+import User from "@entities/info/user.entity";
 import { MSG_200, MSG_400 } from "@configs/settings";
-import infoTypeorm from "@services/typeorm/info.typeorm";
+import infoMoredis from "@services/moredis/info.moredis";
 
 class AdmController extends BaseController {
   initAdm = async (req: Request, res: Response) => {
@@ -21,7 +21,7 @@ class AdmController extends BaseController {
 
   listUsers = async (req: Request, res: Response) => {
     this.callAuthFunc(req, res, async (req: Request, user: User) => {
-      return await infoTypeorm.listUsers();
+      return await infoMoredis.listUsers();
     }, this.admRole);
   };
 
@@ -29,13 +29,13 @@ class AdmController extends BaseController {
     this.callAuthFunc(req, res, async (req: Request, user: User) => {
       const { name, roles } = req.body;
 
-      const existUser = await infoTypeorm.getUser(name);
+      const existUser = await infoMoredis.getUser(name);
       if (existUser) {
         existUser.roles = checkRole(roles);
-        return await infoTypeorm.saveUser(existUser) ? MSG_200["successful"] : MSG_400["update_failed"];
+        return await infoMoredis.saveUser(existUser) ? MSG_200["successful"] : MSG_400["update_failed"];
       } else {
         const userWithSecret = await createUserWithSecret(name, checkRole(roles));
-        return await infoTypeorm.saveUser(userWithSecret.user) ? userWithSecret.secret : MSG_400["update_failed"];
+        return await infoMoredis.saveUser(userWithSecret.user) ? userWithSecret.secret : MSG_400["update_failed"];
       }
     }, this.admRole);
   }

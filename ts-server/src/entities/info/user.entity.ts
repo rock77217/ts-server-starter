@@ -2,7 +2,7 @@ import { ROLES } from "configs/settings";
 import { Entity, PrimaryColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
 
 @Entity("users")
-export class User {
+export default class User {
   @PrimaryColumn()
   name!: string;
 

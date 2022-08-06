@@ -1,8 +1,9 @@
 import argon2 from "argon2";
 import { v4 as uuidv4 } from "uuid";
-import infoTypeorm, { stripeSecret } from "@services/typeorm/info.typeorm";
-import { ChainMarket, User } from "@entities/info/user.entity";
-import { ADM_NAME, MSG_400, MSG_403, ROLES } from "@configs/settings";
+import infoMoredis, { stripeSecret } from "@services/moredis/info.moredis";
+import User, { ChainMarket } from "@entities/info/user.entity";
+import { ADM_NAME, MSG_400, MSG_403, MSG_500, ROLES } from "@configs/settings";
+import { isEmpty } from "@utils/util";
 
 interface UserSecretResponse {
   user: User;
@@ -24,11 +25,11 @@ const isMatchRole = (ownRoles: string[], requiredRole?: string[]) => {
 };
 
 export const initAdm = async () => {
-  const users = await infoTypeorm.listUsersWithSecret();
+  const users = await infoMoredis.listUsersWithSecret();
   if (!checkAdminEnable(users)) {
-    await infoTypeorm.clearUsers();
+    await infoMoredis.clearUsers();
     const userSecretResp = await createUserWithSecret(ADM_NAME, Object.keys(ROLES), undefined, false);
-    await infoTypeorm.saveUser(userSecretResp.user);
+    await infoMoredis.saveUser(userSecretResp.user);
     return userSecretResp.secret;
   }
   throw new Error(MSG_400["already_init"]);
@@ -46,18 +47,19 @@ export const createUserWithSecret = async (name: string, roles: string[], chainM
 };
 
 export const activateUser = async (name: string) => {
-  const user = await infoTypeorm.getUser(name);
+  const user = await infoMoredis.getUser(name);
   if (user) {
     if (user?.isActived) throw new Error(MSG_400["already_activated"]);
     user.isActived = !user.isActived;
-    await infoTypeorm.saveUser(user);
+    await infoMoredis.saveUser(user);
   } else {
     throw new Error(MSG_400["user_not_found"]);
   }
 }
 
 export const checkAndGetAuthUser = async (secret?: string, needActived = true, requireRole?: string[], withVault = false) => {
-  const userList = await infoTypeorm.listUsersWithSecret();
+  const userList = await infoMoredis.listUsersWithSecret();
+  if (isEmpty(userList)) throw new Error(MSG_500["server_error"]);
   for (const user of userList) {
     if (user?.secret && secret && await argon2.verify(user.secret, secret)) {
       if (needActived && !user.isActived) throw new Error(MSG_403["not_activated"]);

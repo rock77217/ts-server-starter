@@ -12,19 +12,68 @@ services:
       - 3000:3000
     volumes:
       - ./ts-server:/srv/app
+      - /srv/app/node_modules
+      - /srv/app/dist
     environment:
       - MONGO_URI=${MONGO_URI}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_SENTINELS=${REDIS_SENTINELS}
+      - LOG_DIR=${LOG_DIR}
     links:
       - ts-server-db
+      - redis
+      - redis_sentinel
     depends_on:
       - mongodb
+      - redis
+      - redis_slave
+      - redis_sentinel
     tty: true
     stdin_open: true
   ts-server-db:
     image: mongo:5.0.2
     container_name: ts-server-db
-    restart: always
+    restart: unless-stopped
     ports:
-      - 27017:27017
+      - 27018:27017
     volumes:
       - ./data/mongodb:/data/db
+  redis:
+    image: bitnami/redis:6.2
+    container_name: redis
+    environment:
+      - REDIS_REPLICATION_MODE=master
+      - ALLOW_EMPTY_PASSWORD=yes
+    #    ports:
+    #      - 6379:6379
+    restart: unless-stopped
+  redis_slave:
+    image: bitnami/redis:6.2
+    container_name: redis_slave
+    environment:
+      - REDIS_REPLICATION_MODE=slave
+      - REDIS_MASTER_HOST=${REDIS_MASTER_HOST}
+      - ALLOW_EMPTY_PASSWORD=yes
+    #    ports:
+    #        - 6378:6379
+    links:
+      - redis
+    depends_on:
+      - redis
+    restart: unless-stopped
+  redis_sentinel:
+    image: bitnami/redis-sentinel:6.2
+    environment:
+      - REDIS_MASTER_HOST=${REDIS_MASTER_HOST}
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS=10000
+    #    ports:
+    #        - '26379-26381:26379'
+    links:
+      - redis
+      - redis_slave
+    depends_on:
+      - redis
+      - redis_slave
+
+    restart: unless-stopped

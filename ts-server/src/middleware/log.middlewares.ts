@@ -1,5 +1,6 @@
 import morgan from "morgan";
 import { Request, Response } from 'express';
+import { stream } from '@utils/logger';
 
 morgan.token('statusColor', (req: Request, res: Response) => {
   // get the status code if response written
@@ -16,9 +17,10 @@ morgan.token('statusColor', (req: Request, res: Response) => {
 });
 
 const logMiddlewares = morgan(
-  "[:date[iso]] \x1b[33m:method\x1b[0m \x1b[36m:url\x1b[0m :statusColor :remote-addr :response-time ms - :res[content-length]",
+  "\x1b[33m:method\x1b[0m \x1b[36m:url\x1b[0m :statusColor :remote-addr :response-time ms - :res[content-length]",
   {
-    skip: (req, res) => req.url === "/",
+    skip: (req, _) => req.url === "/",
+    stream
   }
 );
 
