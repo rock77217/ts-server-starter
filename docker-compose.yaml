@@ -5,6 +5,8 @@ services:
     build:
       context: ./ts-server
       target: ${TARGET:-dev}
+      args:
+        - LOG_DIR=${LOG_DIR}
     image: ts-server:latest
     container_name: ts-server
     restart: unless-stopped

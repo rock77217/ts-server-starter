@@ -23,6 +23,16 @@
     curl -k --location --request PATCH 'https://{ServerUrl}/adm/activate' --header 'apiKey: {UUID}'
     ```
 
+## Commands
+- Monitor log
+    ```bash
+    docker logs -f ts-server
+    ```
+- Restart all and recreate container
+    ```bash
+    docker-compose --env-file ./config/.local.env down -v; docker-compose --env-file ./config/.local.env up --scale redis_sentinel=3 -d --force-recreate
+    ```
+
 ## Troubleshooting
 - PM2 error: Error: ENOSPC: System limit for number of file watchers reached
     ```bash
