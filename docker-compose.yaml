@@ -27,7 +27,7 @@ services:
       - redis
       - redis_sentinel
     depends_on:
-      - mongodb
+      - ts-server-db
       - redis
       - redis_slave
       - redis_sentinel
