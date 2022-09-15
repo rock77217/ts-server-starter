@@ -1,16 +1,18 @@
+import { NODE_ENV, PORT } from "@configs/settings";
+import { Routes } from "@interfaces/routes.interface";
+import errorMiddleware from "@middleware/error.middleware";
+import logMiddlewares from "@middleware/log.middlewares";
+import notFoundMiddleware from "@middleware/notfound.middleware";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
 import fileUpload from "express-fileupload";
+import fs from "fs";
 import helmet from "helmet";
 import hpp from "hpp";
+import https from "https";
 import path from "path";
-import { Routes } from "@interfaces/routes.interface";
-import { NODE_ENV, PORT } from "@configs/settings";
-import logMiddlewares from "@middleware/log.middlewares";
-import errorMiddleware from "@middleware/error.middleware";
-import notFoundMiddleware from "@middleware/notfound.middleware";
 
 class App {
   public app: express.Application;
@@ -28,7 +30,12 @@ class App {
   }
 
   public listen() {
-    this.app.listen(this.port);
+    const ssl = {
+      key: fs.readFileSync(__dirname + "/../ssl/private.key", "utf8"),
+      cert: fs.readFileSync(__dirname + "/../ssl/certificate.crt", "utf8"),
+    };
+    const serverHttps = https.createServer(ssl, this.app);
+    serverHttps.listen(this.port);
   }
 
   private initializeMiddlewares() {

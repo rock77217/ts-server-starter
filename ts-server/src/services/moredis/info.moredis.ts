@@ -1,14 +1,9 @@
-import BaseMoredis, { genEntitiesMap } from "./base.moredis";
 import { DBS, SYS_DB } from "@configs/settings";
-import User from "@entities/info/user.entity";
+import { IUser } from "@models/user.model";
+import { DeleteResult } from "mongodb";
+import BaseMoredis from "./base.moredis";
 
-export const stripeSecret = (user: User, keepSecret = false, keepVault = false) => {
-  if (!keepVault) {
-    user?.chainMarket?.forEach((chainMarket) => {
-      if (chainMarket.vault) chainMarket.vault = "Invisible";
-    });
-  }
-
+export const stripeSecret = (user: IUser, keepSecret = false) => {
   if (!keepSecret) {
     delete user?.secret;
     delete user?.secretCandidate;
@@ -19,19 +14,18 @@ export const stripeSecret = (user: User, keepSecret = false, keepVault = false) 
 
 class InfoMoredis extends BaseMoredis {
   constructor() {
-    const entities = genEntitiesMap(SYS_DB.info, Object.keys(DBS.info));
-    super(SYS_DB.info, entities);
+    super(SYS_DB.info, Object.keys(DBS.info));
   }
 
-  public getUser = async (name: string) => {
+  public getUser = async (name: string): Promise<IUser> => {
     return await this.hybridFindOne(DBS.info.user, { name: name });
   };
 
-  public listUsersWithSecret = async () => {
+  public listUsersWithSecret = async (): Promise<IUser[]> => {
     return await this.hybridFind(DBS.info.user);
   };
 
-  public listUsers = async () => {
+  public listUsers = async (): Promise<IUser[]> => {
     const userList = [];
     for (const user of await this.hybridFind(DBS.info.user)) {
       userList.push(stripeSecret(user));
@@ -39,11 +33,11 @@ class InfoMoredis extends BaseMoredis {
     return userList;
   };
 
-  public clearUsers = async () => {
+  public clearUsers = async (): Promise<DeleteResult> => {
     return await this.delete(DBS.info.user, {});
   };
 
-  public saveUser = async (user: User, key = { name: user.name }) => {
+  public saveUser = async (user: IUser, key = { name: user.name }) => {
     return await this.hybridUpdate(DBS.info.user, key, user);
   };
 }

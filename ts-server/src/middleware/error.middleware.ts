@@ -1,17 +1,25 @@
-import { NextFunction, Request, Response } from 'express';
-import { HttpException } from '@exceptions/HttpException';
-import { logger } from '@utils/logger';
+import { NextFunction, Request, Response } from "express";
+import HttpException from "@exceptions/HttpException";
+import { logger } from "@utils/logger";
+import { HttpError } from "http-errors";
+import axios from "axios";
 
-const errorMiddleware = (error: HttpException, req: Request, res: Response, next: NextFunction) => {
+const errorMiddleware = (error: any, req: Request, res: Response, next: NextFunction) => {
   try {
-    const status: number = error.status || 500;
-    const message: string = error.message || 'Something went wrong';
-    
-    logger.error(`[${req.method}] ${req.path} >> StatusCode:: ${status}, Message:: ${message}`);
-    res.status(status).json({ message: message });
-  } catch (error) {
-    next(error);
-  }
+    error.stack ? logger.error(error.stack) : logger.error(error.message);
+    if (axios.isAxiosError(error)) {
+      if (error.response?.status) res.status(error.response?.status);
+      res.json(error.response?.data);
+    } else if (error instanceof HttpException || error instanceof HttpError) {
+      res.status(error.status || 500).json({
+        error: error.message,
+      });
+    } else {
+      res.status(500).json({
+        error: error.message,
+      });
+    }
+  } catch (error) {}
 };
 
 export default errorMiddleware;

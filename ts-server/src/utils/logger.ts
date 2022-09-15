@@ -8,7 +8,7 @@ import { isEmpty } from "@utils/util";
 const logDir: string = LOG_DIR && !isEmpty(LOG_DIR) ? LOG_DIR : join(__dirname, "../../logs");
 const globalLevel = process.env.NODE_ENV === "development" ? "debug" : "http";
 
-if (!existsSync(logDir)) {
+if (process.env.NODE_APP_INSTANCE === "0" && !existsSync(logDir)) {
   mkdirSync(logDir);
 }
 
@@ -16,7 +16,7 @@ const alignColorsAndTime = winston.format.combine(
   winston.format.timestamp({
     format: "YYYY-MM-DDTHH:mm:ss",
   }),
-  winston.format.printf((info) => `${info.timestamp} ${info.level} ${info.message}`)
+  winston.format.printf((info) => `${info.timestamp} [${process.env.NODE_APP_INSTANCE}] ${info.level} ${info.message}`)
 );
 
 const logger = winston.createLogger({
@@ -34,9 +34,19 @@ const logger = winston.createLogger({
       datePattern: "YYYY-MM-DD",
       dirname: logDir, // log file /logs/debug/*.log in save
       filename: `%DATE%.log`,
-      maxFiles: 90, // 30 Days saved
+      maxFiles: "90d", // 30 Days saved
       handleExceptions: true,
-      handleRejections: true,
+      json: false,
+    }),
+    new (winston.transports.DailyRotateFile)({
+      level: "error",
+      datePattern: "YYYY-MM-DD",
+      dirname: logDir,
+      filename: "%DATE%.error.log",
+      maxFiles: "90d",
+      createSymlink: true,
+      symlinkName: 'nft-service-error.log',
+      handleExceptions: true,
       json: false,
     }),
     new winston.transports.Console(),

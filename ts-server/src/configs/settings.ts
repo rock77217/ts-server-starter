@@ -17,54 +17,27 @@ const loadRedisUri = (_redisUriArray = process.env.REDIS_SENTINELS) => {
 
 export const { MONGO_URI, MONGO_URI_SUFFIX, NODE_ENV, PORT, REDIS_HOST, LOG_DIR } = process.env;
 export const ADM_NAME = "admin";
-export const ROLES = {
-  basic: "basic",
-  advanced: "advanced",
-  store: "store",
-  audit: "audit",
-  admin: "admin",
-};
+export enum ROLES {
+  basic = "basic",
+  advanced = "advanced",
+  store = "store",
+  audit = "audit",
+  admin = "admin",
+}
+export const LOG_ALIVE_MONTHS = 3;
 
 /**
  * DBs
  */
 export const DBS = DBSchema;
-export const SYS_DB = Object.freeze({
-  info: "info",
-});
+export enum SYS_DB {
+  info = "info",
+  metadata = "metadata",
+  log = "log",
+}
 
 /**
  * Redis values
  */
 export const REDIS_SENTINELS = loadRedisUri();
 export const REDIS_NAME = "mymaster";
-
-/**
- * Http return values
- */
-export const MSG_200 = {
-  successful: "Successful",
-  activated: "Activated",
-};
-export const MSG_400 = {
-  already_activated: "Already activated",
-  already_init: "Adm user already activated",
-  entity_not_found: "Entity not found. Please check your input.",
-  role_invalid: "Invalid roles",
-  user_not_found: "User name not found",
-  update_failed: "Update data failed.",
-  delete_failed: "Delete data failed.",
-};
-export const MSG_403 = {
-  auth_failed: "Authentication error",
-  key_invalid: "API key invalid",
-  not_activated: "This user not activated yet",
-  permission_denied: "Permission denied",
-};
-export const MSG_404 = {
-  not_found: "Not Found",
-};
-export const MSG_500 = {
-  update_failed: "Database update error",
-  server_error: "Server error, please contact administrator",
-};

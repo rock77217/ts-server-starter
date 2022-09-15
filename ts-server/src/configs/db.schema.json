@@ -1,5 +1,9 @@
 {
   "info": {
     "user": "user"
+  },
+  "log": {
+    "express_log": "express_log",
+    "sync_log": "sync_log"
   }
 }
