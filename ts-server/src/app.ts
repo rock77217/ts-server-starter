@@ -3,6 +3,7 @@ import { Routes } from "@interfaces/routes.interface";
 import errorMiddleware from "@middleware/error.middleware";
 import logMiddlewares from "@middleware/log.middlewares";
 import notFoundMiddleware from "@middleware/notfound.middleware";
+import swagger from "@swagger";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -55,6 +56,7 @@ class App {
     routes.forEach((route) => {
       this.app.use("/", route.router);
     });
+    this.app.use('/swagger', swagger);
   }
 
   private initializeErrorHandling() {

@@ -11,6 +11,27 @@ export interface IUser {
   createTime?: Date;
 }
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     User:
+ *       description: User data
+ *       type: object
+ *       properties:
+ *         name:
+ *           type: string
+ *         isActived:
+ *           type: boolean
+ *         roles:
+ *           type: array
+ *           items:
+ *             type: string
+ *         updateTime:
+ *           type: string
+ *         createTime:
+ *           type: string
+ */
 const UserSchema = new Schema<IUser>(
   {
     name: { type: String, unique: true },

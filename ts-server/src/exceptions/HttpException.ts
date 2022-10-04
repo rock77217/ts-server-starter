@@ -1,3 +1,35 @@
+/**
+ * @swagger
+ * components:
+ *   responses:
+ *     NotFound:
+ *       description: The specified resource was not found
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Error'
+ *     RequestError:
+ *       description: Request data invalid
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Error'
+ *     Unauthorized:
+ *       description: Unauthorized
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Error'
+ *   schemas:
+ *     Error:
+ *       type: object
+ *       properties:
+ *         error:
+ *           type: string
+ *       required:
+ *         - error
+ */
+
 export default class HttpException extends Error {
   public status: number;
 
