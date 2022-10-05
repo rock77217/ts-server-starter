@@ -23,19 +23,19 @@ services:
       - REDIS_SENTINELS=${REDIS_SENTINELS}
       - LOG_DIR=${LOG_DIR}
     links:
-      - ts-server-db
+      - mongodb
       - redis
       - redis_sentinel
     depends_on:
-      - ts-server-db
+      - mongodb
       - redis
       - redis_slave
       - redis_sentinel
     tty: true
     stdin_open: true
-  ts-server-db:
+  mongodb:
     image: mongo:5.0.2
-    container_name: ts-server-db
+    container_name: mongodb
     restart: unless-stopped
     ports:
       - 27017:27017
