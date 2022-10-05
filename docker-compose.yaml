@@ -8,7 +8,6 @@ services:
       args:
         - LOG_DIR=${LOG_DIR}
     image: ts-server:latest
-    container_name: ts-server
     restart: unless-stopped
     ports:
       - ${PORT}:3000
@@ -35,7 +34,6 @@ services:
     stdin_open: true
   mongodb:
     image: mongo:5.0.2
-    container_name: mongodb
     restart: unless-stopped
     ports:
       - 27017:27017
@@ -43,7 +41,6 @@ services:
       - ./data/mongodb:/data/db
   redis:
     image: bitnami/redis:6.2
-    container_name: redis
     environment:
       - REDIS_REPLICATION_MODE=master
       - ALLOW_EMPTY_PASSWORD=yes
@@ -52,7 +49,6 @@ services:
     restart: unless-stopped
   redis_slave:
     image: bitnami/redis:6.2
-    container_name: redis_slave
     environment:
       - REDIS_REPLICATION_MODE=slave
       - REDIS_MASTER_HOST=${REDIS_MASTER_HOST}
@@ -78,5 +74,4 @@ services:
     depends_on:
       - redis
       - redis_slave
-
     restart: unless-stopped

@@ -1,7 +1,10 @@
 ## Getting Started
+
+* #### All configs at ./config/.local.env
+
 1. Build docker image
     ```bash
-    docker-compose --env-file ./config/.local.env build
+    docker-compose --env-file build
     ```
 2. yarn
     ```bash
@@ -10,8 +13,8 @@
 3. Run docker container
     ```bash
     cd ..
-    docker-compose --env-file ./config/.local.env down -v
-    docker-compose --env-file ./config/.local.env up --scale redis_sentinel=3 -d --force-recreate
+    docker-compose --env-file down -v
+    docker-compose --env-file up --scale redis_sentinel=3 -d --force-recreate
     ```
 4. Get admin token ID
     ```curl
@@ -26,11 +29,11 @@
 ## Commands
 - Monitor log
     ```bash
-    docker logs -f ts-server
+    docker logs -f ts_service-ts-server-1
     ```
 - Restart all and recreate container
     ```bash
-    docker-compose --env-file ./config/.local.env down -v; docker-compose --env-file ./config/.local.env up --scale redis_sentinel=3 -d --force-recreate
+    docker-compose down -v; docker-compose up --scale redis_sentinel=3 -d --force-recreate
     ```
 
 ## Troubleshooting
