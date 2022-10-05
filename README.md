@@ -4,7 +4,7 @@
 
 1. Build docker image
     ```bash
-    docker-compose --env-file build
+    docker-compose build
     ```
 2. yarn
     ```bash
@@ -13,8 +13,8 @@
 3. Run docker container
     ```bash
     cd ..
-    docker-compose --env-file down -v
-    docker-compose --env-file up --scale redis_sentinel=3 -d --force-recreate
+    docker-compose down -v
+    docker-compose up --scale redis_sentinel=3 -d --force-recreate
     ```
 4. Get admin token ID
     ```curl
