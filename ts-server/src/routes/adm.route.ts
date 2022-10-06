@@ -1,6 +1,6 @@
 import { Router } from "express";
-import admController from "@/controllers/adm.controller";
-import { Routes } from "@/interfaces/routes.interface";
+import admController from "@controllers/adm.controller";
+import { Routes } from "@interfaces/routes.interface";
 
 class AdmRoute implements Routes {
   public path = "/adm";

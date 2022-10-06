@@ -1,4 +1,4 @@
-import { ROLES } from "@/configs/settings";
+import { ROLES } from "@configs/settings";
 import { IExpressLog } from "@models/express_log.model";
 import { IUser } from "@models/user.model";
 import { checkAndGetAuthUser } from "@services/auth.service";

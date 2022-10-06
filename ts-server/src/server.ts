@@ -1,4 +1,4 @@
-import App from "@app";
+import App from "./app";
 import IndexRoute from "@routes/index.route";
 import AdmRoute from "@routes/adm.route";
 

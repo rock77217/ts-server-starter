@@ -1,4 +1,4 @@
-import { ROLES } from "configs/settings";
+import { ROLES } from "@configs/settings";
 import { Entity, PrimaryColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
 
 @Entity("users")

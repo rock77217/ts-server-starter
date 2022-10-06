@@ -14,6 +14,7 @@ services:
     volumes:
       - ./ts-server:/srv/app
       - /srv/app/ssl
+      # Please remove # under if you wanna run as server
       #- /srv/app/node_modules
       #- /srv/app/dist
     environment:
