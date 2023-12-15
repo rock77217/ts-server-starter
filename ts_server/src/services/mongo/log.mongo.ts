@@ -1,9 +1,9 @@
 import { DBS, LOG_ALIVE_MONTHS, SYS_DB } from "@/configs/settings";
 import { IExpressLog } from "@/models/express_log.model";
-import BaseMoredis from "@/services/moredis/base.moredis";
+import BaseMongo from "@/services/mongo/base.mongo";
 import moment from "moment";
 
-class LogMoredis extends BaseMoredis {
+class LogMongo extends BaseMongo {
   constructor() {
     super(SYS_DB.log, Object.keys(DBS.log));
   }
@@ -25,5 +25,5 @@ class LogMoredis extends BaseMoredis {
   };
 }
 
-const logMoredis = new LogMoredis();
-export default logMoredis;
+const logMongo = new LogMongo();
+export default logMongo;

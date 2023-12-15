@@ -33,7 +33,7 @@
     ```
 - Restart all and recreate container
     ```bash
-    docker-compose down -v; docker-compose up --scale redis_sentinel=3 -d --force-recreate
+    docker-compose down -v; docker-compose -d --force-recreate
     ```
 
 ## Troubleshooting

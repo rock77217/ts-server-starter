@@ -1,7 +1,7 @@
 import BaseController, { IUserAuth, admRole } from "@/controllers/base.controller";
 import { MSG_200, MSG_400 } from "@/exceptions/HttpException";
 import { activateUser, checkRole, createUserWithSecret, initAdm } from "@/services/auth.service";
-import infoMoredis from "@/services/moredis/info.moredis";
+import infoMongo from "@/services/mongo/info.mongo";
 import { NextFunction, Request, Response } from "express";
 
 class AdmController extends BaseController {
@@ -24,7 +24,7 @@ class AdmController extends BaseController {
 
   listUsers = (req: Request, res: Response, next: NextFunction) => {
     this.callAuth(req, res, next, async () => {
-      return await infoMoredis.listUsers();
+      return await infoMongo.listUsers();
     });
   };
 
@@ -32,13 +32,13 @@ class AdmController extends BaseController {
     this.callAuth(req, res, next, async (req: Request) => {
       const { name, roles } = req.body;
 
-      const existUser = await infoMoredis.getUser(name);
+      const existUser = await infoMongo.getUser(name);
       if (existUser) {
         existUser.roles = checkRole(roles);
-        return await infoMoredis.saveUser(existUser) ? MSG_200["successful"] : MSG_400["update_failed"];
+        return await infoMongo.saveUser(existUser) ? MSG_200["successful"] : MSG_400["update_failed"];
       } else {
         const userWithSecret = await createUserWithSecret(name, checkRole(roles));
-        return await infoMoredis.saveUser(userWithSecret.user) ? userWithSecret.secret : MSG_400["update_failed"];
+        return await infoMongo.saveUser(userWithSecret.user) ? userWithSecret.secret : MSG_400["update_failed"];
       }
     });
   }

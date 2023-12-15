@@ -1,6 +1,6 @@
 import { DBS, SYS_DB } from "@/configs/settings";
 import { IUser } from "@/models/user.model";
-import BaseMoredis from "@/services/moredis/base.moredis";
+import BaseMongo from "@/services/mongo/base.mongo";
 import mongoose from "mongoose";
 
 export const stripeSecret = (user: IUser, keepSecret = false) => {
@@ -12,7 +12,7 @@ export const stripeSecret = (user: IUser, keepSecret = false) => {
   return user;
 };
 
-class InfoMoredis extends BaseMoredis {
+class InfoMongo extends BaseMongo {
   constructor() {
     super(SYS_DB.info, Object.keys(DBS.info));
   }
@@ -42,5 +42,5 @@ class InfoMoredis extends BaseMoredis {
   };
 }
 
-const infoMoredis = new InfoMoredis();
-export default infoMoredis;
+const infoMongo = new InfoMongo();
+export default infoMongo;

@@ -5,7 +5,7 @@ import { deleteUndefinedElem, isMasterThread } from "@/utils/util";
 import mongoose, { ConnectOptions, QueryOptions } from "mongoose";
 import urlJoin from "url-join";
 
-export default class BaseMoredis {
+export default class BaseMongo {
   public dbName: string;
   protected conn?: mongoose.Connection;
   protected modelNames: string[];

@@ -2,7 +2,7 @@ import { ADM_NAME, ROLES } from "@/configs/settings";
 import { MSG_400, MSG_403, MSG_500 } from "@/exceptions/HttpException";
 import ExpressLog from "@/handlers/express_log.handler";
 import { IUser } from "@/models/user.model";
-import infoMoredis, { stripeSecret } from "@/services/moredis/info.moredis";
+import infoMongo, { stripeSecret } from "@/services/mongo/info.mongo";
 import argon2 from "argon2";
 import _ from "lodash";
 import { v4 as uuidv4 } from "uuid";
@@ -27,11 +27,11 @@ const isMatchRole = (ownRoles: string[] | ROLES[], requiredRole?: string[]) => {
 };
 
 export const initAdm = async () => {
-  const users = await infoMoredis.listUsersWithSecret();
+  const users = await infoMongo.listUsersWithSecret();
   if (!checkAdminEnable(users)) {
-    await infoMoredis.clearUsers();
+    await infoMongo.clearUsers();
     const userSecretResp = await createUserWithSecret(ADM_NAME, Object.values(ROLES).filter((v) => isNaN(Number(v))), false);
-    await infoMoredis.saveUser(userSecretResp.user);
+    await infoMongo.saveUser(userSecretResp.user);
     return userSecretResp.secret;
   }
   throw new Error(MSG_400["already_init"]);
@@ -49,18 +49,18 @@ export const createUserWithSecret = async (name: string, roles: ROLES[], isActiv
 };
 
 export const activateUser = async (name: string) => {
-  const user = await infoMoredis.getUser(name);
+  const user = await infoMongo.getUser(name);
   if (user) {
     if (user?.isActived) throw new Error(MSG_400["already_activated"]);
     user.isActived = !user.isActived;
-    await infoMoredis.saveUser(user);
+    await infoMongo.saveUser(user);
   } else {
     throw new Error(MSG_400["user_not_found"]);
   }
 }
 
 export const checkAndGetAuthUser = async (secret?: string, needActived = true, requireRole?: string[], reqId?: string) => {
-  const userList = await infoMoredis.listUsersWithSecret();
+  const userList = await infoMongo.listUsersWithSecret();
   if (_.isEmpty(userList)) throw new Error(MSG_500["server_error"]);
   for (const user of userList) {
     if (user?.secret && secret && await argon2.verify(user.secret, secret)) {
