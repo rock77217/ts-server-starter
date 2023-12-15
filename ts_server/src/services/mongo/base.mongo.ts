@@ -30,12 +30,12 @@ export default class BaseMongo {
       this.conn.once("open", () => {
         if (this.conn) {
           this.conn.on("error", (err: any) => {
-            logger.error(`[MoredisDB][${this.dbName}] Connection event: error. Reason: ${err.message}`);
+            logger.error(`[MongoDB][${this.dbName}] Connection event: error. Reason: ${err.message}`);
             mongoose.disconnect();
           });
 
           this.conn.on("disconnected", () => {
-            logger.error(`[MoredisDB][${this.dbName}] Connection event: disconnected.`);
+            logger.error(`[MongoDB][${this.dbName}] Connection event: disconnected.`);
             // Retry wnhen disconnected
             setImmediate(() => this.tryConnectDB());
           });
@@ -48,7 +48,7 @@ export default class BaseMongo {
         }
       });
     } catch (err: any) {
-      logger.error(`[MoredisDB][${this.dbName}] MongoDB connect error. Reason: ${err.message}`);
+      logger.error(`[MongoDB][${this.dbName}] MongoDB connect error. Reason: ${err.message}`);
       // Retry when error at first time
       setImmediate(() => this.tryConnectDB());
     }
@@ -62,7 +62,7 @@ export default class BaseMongo {
         }
       }
 
-      logger.info(`[MoredisDB][${this.dbName}] Start connect.`);
+      logger.info(`[MongoDB][${this.dbName}] Start connect.`);
     }
   };
 
