@@ -8,13 +8,13 @@
     ```
 2. yarn
     ```bash
-    cd ts-server; yarn
+    cd ts_server; yarn
     ```
 3. Run docker container
     ```bash
     cd ..
     docker-compose down -v
-    docker-compose up --scale redis_sentinel=3 -d --force-recreate
+    docker-compose up --force-recreate
     ```
 4. Get admin token ID
     ```curl
@@ -29,7 +29,7 @@
 ## Commands
 - Monitor log
     ```bash
-    docker logs -f ts_service-ts-server-1
+    docker logs -f ts_service-ts_server-1
     ```
 - Restart all and recreate container
     ```bash

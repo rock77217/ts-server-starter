@@ -1,78 +1,36 @@
 version: "3.7"
 
 services:
-  ts-server:
+  ts_server:
     build:
-      context: ./ts-server
+      context: ./ts_server
       target: ${TARGET:-dev}
       args:
         - LOG_DIR=${LOG_DIR}
-    image: ts-server:latest
+    image: ts_server:latest
     restart: unless-stopped
     ports:
-      - ${PORT}:3000
+      - ${SERVER_PORT}:3000
     volumes:
-      - ./ts-server:/srv/app
+      - ./ts_server:/srv/app
       - /srv/app/ssl
+      - ${SSL_PATH:-./ts_server/ssl}:/srv/app/ssl
       # Please remove # under if you wanna run as server
       #- /srv/app/node_modules
-      #- /srv/app/dist
+      - /srv/app/dist
     environment:
       - MONGO_URI=${MONGO_URI}
-      - REDIS_HOST=${REDIS_HOST}
-      - REDIS_SENTINELS=${REDIS_SENTINELS}
       - LOG_DIR=${LOG_DIR}
     links:
       - mongodb
-      - redis
-      - redis_sentinel
     depends_on:
       - mongodb
-      - redis
-      - redis_slave
-      - redis_sentinel
     tty: true
     stdin_open: true
   mongodb:
-    image: mongo:5.0.2
+    image: mongo:7.0.4
     restart: unless-stopped
     ports:
-      - 27017:27017
+      - ${DB_PORT}:27017
     volumes:
-      - ./data/mongodb:/data/db
-  redis:
-    image: bitnami/redis:6.2
-    environment:
-      - REDIS_REPLICATION_MODE=master
-      - ALLOW_EMPTY_PASSWORD=yes
-    #    ports:
-    #      - 6379:6379
-    restart: unless-stopped
-  redis_slave:
-    image: bitnami/redis:6.2
-    environment:
-      - REDIS_REPLICATION_MODE=slave
-      - REDIS_MASTER_HOST=${REDIS_MASTER_HOST}
-      - ALLOW_EMPTY_PASSWORD=yes
-    #    ports:
-    #        - 6378:6379
-    links:
-      - redis
-    depends_on:
-      - redis
-    restart: unless-stopped
-  redis_sentinel:
-    image: bitnami/redis-sentinel:6.2
-    environment:
-      - REDIS_MASTER_HOST=${REDIS_MASTER_HOST}
-      - ALLOW_EMPTY_PASSWORD=yes
-      - REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS=10000
-    #    ports:
-    #        - '26379-26381:26379'
-    links:
-      - redis
-      - redis_slave
-    depends_on:
-      - redis
-      - redis_slave
-    restart: unless-stopped
+      - ${DB_PATH}:/data/db
