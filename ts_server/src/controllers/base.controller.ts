@@ -9,9 +9,9 @@ export interface IUserAuth extends IBasicAuth {
 
 export interface IBasicAuth {}
 
-type IBasicFunc = (req: Request, info: IBasicAuth) => Promise<any>;
+type IBasicFunc = (info: IBasicAuth) => Promise<any>;
 
-type IUserFunc = IBasicFunc | ((req: Request, info: IUserAuth) => Promise<any>);
+type IUserFunc = IBasicFunc | ((info: IUserAuth) => Promise<any>);
 
 export const basicRole = [ROLES["basic"]];
 export const advanceRole = [ROLES["advanced"], ROLES["admin"]];
@@ -27,7 +27,7 @@ class BaseController {
 
   public callFunc = async (req: Request, res: Response, next: NextFunction, func: IBasicFunc): Promise<void> => {
     try {
-      this.retSuccess(req, res, await func(req, {}));
+      this.retSuccess(req, res, await func({}));
     } catch (err) {
       next(err);
     }
@@ -38,7 +38,7 @@ class BaseController {
       const data: IUserAuth = {
         user: await checkAndGetAuthUser(req.header("apiKey"), true, requireRole, res.locals.logId),
       };
-      this.retSuccess(req, res, await func(req, data));
+      this.retSuccess(req, res, await func(data));
     } catch (err: any) {
       next(err);
     }
@@ -49,7 +49,7 @@ class BaseController {
       const data: IUserAuth = {
         user: await checkAndGetAuthUser(req.header("apiKey"), false, requireRole, res.locals.logId),
       };
-      this.retSuccess(req, res, await func(req, data), data.user.name);
+      this.retSuccess(req, res, await func(data), data.user.name);
     } catch (err: any) {
       next(err);
     }

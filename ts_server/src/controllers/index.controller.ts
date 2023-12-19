@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 
 class IndexController extends BaseController {
   public index = (req: Request, res: Response, next: NextFunction): void => {
-    this.callFunc(req, res, next, async (req: Request) => {
+    this.callFunc(req, res, next, async () => {
       return "Express + TypeScript Server";
     });
   };

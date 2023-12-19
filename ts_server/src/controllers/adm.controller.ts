@@ -16,7 +16,7 @@ class AdmController extends BaseController {
   };
 
   public activeAdm = (req: Request, res: Response, next: NextFunction) => {
-    this.callAuthNotActived(req, res, next, async (req: Request, auth: IUserAuth) => {
+    this.callAuthNotActived(req, res, next, async (auth: IUserAuth) => {
       await activateUser(auth.user.name);
       return MSG_200["activated"];
     });
@@ -29,7 +29,7 @@ class AdmController extends BaseController {
   };
 
   saveUser = (req: Request, res: Response, next: NextFunction) => {
-    this.callAuth(req, res, next, async (req: Request) => {
+    this.callAuth(req, res, next, async () => {
       const { name, roles } = req.body;
 
       const existUser = await infoMongo.getUser(name);
